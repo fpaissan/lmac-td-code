@@ -41,7 +41,9 @@ Some results that are obtained with this recipe on the OOD evaluation are as fol
 |---	|---	|---	|---	|---	| ----    | --   | ---  |
 |L-MAC 	| 60.63 | 4.82 | 35.85 | 0.39 | 0.81 | 0.94 | 9.61 |
 |L-MAC FT | 50.75 | 6.73 | 26.00 | 0.39 | 0.81 | 0.84 | 10.51 |
+|L-MAC TD, &alpha; = 1.00 | 56.75 | 3.62 | 16.84 | 0.42 | 0.88 | 0.89 | 10.36 |
 |L-MAC TD, &alpha; = 0.75 | 59.50 | 3.42 | 21.22 | 0.41 | 0.87 | 0.88 | 10.35 |
+|L-MAC TD, &alpha; = 0.00 | 39.88 | 7.60 | 9.30 | 0.42 | 0.82 | 0.83 | 10.69 |
 |L2I   	| 5.00  | 25.65 | 1.00  	|0.20  | 0.35  | 0.52   | 10.99  |
 
 Please, refer to the [L-MAC paper](https://arxiv.org/abs/2403.13086) for more information about the evaluation metrics.
@@ -84,17 +86,15 @@ Following the approach adopted in LMAC, LMAC-TD trains an interpreter on the cla
 
 For more details, refer to our [LMAC-TD paper](https://arxiv.org/abs/2409.08655). You can also find samples on the [companion website](https://francescopaissan.it/lmac-td/).
 
-To train LMAC-TD on a convolutional classifier using the ESC50 dataset, use the `train_sepformerlmac_classifierreps.py` script. Run the following command:
+To train LMAC-TD on a convolutional classifier using the ESC50 dataset, use the `train_lmactd.py` script. Run the following command:
 
 ```shell
-python train_sepformerlmac_classifierreps.py \
-       hparams/sepformerlmac_cnn14_classifierreps.yaml --data_folder=/yourpath/ESC50
+python train_lmactd.py hparams/lmactd_cnn14.yaml --data_folder=/yourpath/ESC50
 ```
 
 Eventually, you can use WHAM! augmentation to boost the interpretations performance, using:
 ```shell
-python  train_sepformerlmac_classifierreps.py \
-        hparams/sepformerlmac_cnn14_classifierreps.yaml \
+python  train_lmactd.py hparams/lmactd_cnn14.yaml 
          --data_folder=/yourpath/ESC50 --add_wham_noise True \
          --wham_folder=/yourpath/wham_noise
 ```
@@ -108,6 +108,11 @@ python  train_sepformerlmac_classifierreps.py \
     --finetuning True --pretrained_interpreter=/yourLMACcheckpointpath/psi_model.ckpt --g_w 4
 ```
 where $g_w$ is the guidance weight for the interpreter. -->
+
+#### Specifying the pretrained classifier
+
+The pretrained classifier to be interpreted is specified with the variables `embedding_model_path`, and `classifier_model_path`. The default model is a model we trained on ESC50, however, if you would like to specify your own model just use paths that point to your own model.
+
 ---------------------------------------------------------------------------------------------------------
 
 ### Posthoc Interpretation via Quantization (PIQ)
@@ -192,7 +197,7 @@ python eval.py hparams/<config>.yaml --data_folder /yourpath/esc50 --overlap_typ
 
 Note that overlap type should be either `mixture` (for contaminating signal to be set as other signals from ESC50), `LJSpeech` (for contaminating signal to be set as speech), or `white_noise` (for contaminating signal to be set as white noise). Please refer to the L-MAC paper for the performance obtained in each setting. Note that `yourpath/psi_model.ckpt` should point to the path of the model checkpoint you would like to use. The typical path for `yourpath/psi_model.ckpt` would be similar to `results/LMAC_cnn14/1234/save/CKPT+2024-06-20+16-05-44+00/psi_model.ckpt`.
 
-**N.B** For the **LMAC-TD** case, `yourpath/psi_model` should point to the folder of the model checkpoint you would like to use, not the `.ckpt file` itself. For example, the typical path would look like:
+**N.B.** For the **LMAC-TD** case, `yourpath/psi_model` should point to the folder of the model checkpoint you would like to use, not the `.ckpt file` itself. For example, the typical path would look like:
 `results/LMACTD_cnn14/1234/save/CKPT+2024-06-20+16-05-44+00/`.
 
 Note also that `add_wham_noise` should be set to `False`.
