@@ -23,7 +23,7 @@ from hyperpyyaml import load_hyperpyyaml
 from train_l2i import L2I
 
 # from train_lmac import LMAC
-from train_sepformerlmac_classifierreps import LMAC
+from train_lmactd import LMAC
 
 # from train_sepformerlmac import SepformerLMAC
 from wham_prepare import prepare_wham
